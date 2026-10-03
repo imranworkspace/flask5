@@ -1,0 +1,9 @@
+.pytest_cache
+__pycache__
+app/__pycache__
+app/models/__pycache__
+app/routers/__pycache__
+.venv
+migrations/__pycache__
+tests/__pycache__
+tests/.pytest_cache
