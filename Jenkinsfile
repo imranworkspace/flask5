@@ -36,7 +36,7 @@ pipeline {
         stage('Check Git') {
             steps {
                 bat '''
-                    git ls-remote --heads https://github.com/imranworkspace/flask5_public
+                    git ls-remote --heads https://github.com/imranworkspace/flask5
                     
                 '''
             }
@@ -44,7 +44,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/imranworkspace/flask5_public'
+                    url: 'https://github.com/imranworkspace/flask5'
             }
         }
 
