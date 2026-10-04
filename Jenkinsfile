@@ -18,17 +18,30 @@ pipeline {
                 bat '''
                     set "PATH=%DOCKER_PATH%;%PATH%"
 
-                    echo ===== Docker PATH =====
+                    echo ==============================
+                    echo Docker PATH
+                    echo ==============================
                     echo %PATH%
 
-                    echo ===== Docker Location =====
+                    echo ==============================
+                    echo Docker Location
+                    echo ==============================
                     where docker
 
-                    echo ===== Docker Version =====
+                    echo ==============================
+                    echo Docker Version
+                    echo ==============================
                     docker --version
 
-                    echo ===== Docker Info =====
+                    echo ==============================
+                    echo Docker Info
+                    echo ==============================
                     docker info
+
+                    if errorlevel 1 (
+                        echo Docker Engine is not available
+                        exit /b 1
+                    )
                 '''
             }
         }
@@ -36,11 +49,20 @@ pipeline {
         stage('Check Git') {
             steps {
                 bat '''
-                    echo ===== Git Version =====
+                    echo ==============================
+                    echo Git Version
+                    echo ==============================
                     git --version
 
-                    echo ===== Git Repository =====
+                    echo ==============================
+                    echo Git Repository
+                    echo ==============================
                     git ls-remote --heads https://github.com/imranworkspace/flask5
+
+                    if errorlevel 1 (
+                        echo Git repository check failed
+                        exit /b 1
+                    )
                 '''
             }
         }
@@ -66,22 +88,37 @@ pipeline {
                     bat '''
                         set "PATH=%DOCKER_PATH%;%PATH%"
 
-                        echo ===== Docker Location =====
+                        echo ==============================
+                        echo Docker Executable
+                        echo ==============================
                         where docker
 
-                        echo ===== Docker Version =====
+                        echo ==============================
+                        echo Docker Version
+                        echo ==============================
                         docker --version
 
-                        echo ===== Docker Login =====
+                        echo ==============================
+                        echo Docker User
+                        echo ==============================
+                        echo %DOCKER_USER%
 
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        echo ==============================
+                        echo Docker Login
+                        echo ==============================
 
-                        if %ERRORLEVEL% NEQ 0 (
-                            echo Docker login failed
+                        echo %DOCKER_PASS% | docker login -u "%DOCKER_USER%" --password-stdin
+
+                        if errorlevel 1 (
+                            echo ==============================
+                            echo Docker login FAILED
+                            echo ==============================
                             exit /b 1
                         )
 
-                        echo Docker login successful
+                        echo ==============================
+                        echo Docker login SUCCESSFUL
+                        echo ==============================
                     '''
                 }
             }
