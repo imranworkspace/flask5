@@ -3,10 +3,12 @@ pipeline {
 
     environment {
         PYTHON = "C:\\Users\\imran\\AppData\\Local\\Programs\\Python\\Python38\\python.exe"
+        DOCKER_PATH = "C:\\Users\\imran\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin"
+        BACKUP_DIR = "D:/jenkins_backups"
+
         // DOCKER_IMAGE = "imrandocker3656/flask5"
         // DB_NAME = "fpractice_db2"
         // DB_USER = "postgres"
-        BACKUP_DIR = "D:/jenkins_backups"
     }
 
     stages {
@@ -14,7 +16,7 @@ pipeline {
         stage('Check Docker') {
             steps {
                 bat '''
-                    set "PATH=C:\\Users\\imran\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;%PATH%"
+                    set "PATH=%DOCKER_PATH%;%PATH%"
 
                     echo ===== Docker PATH =====
                     echo %PATH%
@@ -62,6 +64,14 @@ pipeline {
                     )
                 ]) {
                     bat '''
+                        set "PATH=%DOCKER_PATH%;%PATH%"
+
+                        echo ===== Docker Location =====
+                        where docker
+
+                        echo ===== Docker Version =====
+                        docker --version
+
                         echo ===== Docker Login =====
 
                         echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
