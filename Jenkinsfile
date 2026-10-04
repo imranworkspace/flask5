@@ -80,45 +80,43 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'dockerhub-test',
+                        credentialsId: 'dockerhub-credentials',
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )
                 ]) {
-                    bat '''
-                        set "PATH=%DOCKER_PATH%;%PATH%"
+                    powershell '''
+                        $env:Path = "$env:DOCKER_PATH;$env:Path"
 
-                        echo ==============================
-                        echo Docker Executable
-                        echo ==============================
-                        where docker
+                        Write-Host "=============================="
+                        Write-Host "Docker User"
+                        Write-Host "=============================="
+                        Write-Host $env:DOCKER_USER
 
-                        echo ==============================
-                        echo Docker Version
-                        echo ==============================
+                        Write-Host "=============================="
+                        Write-Host "Docker Version"
+                        Write-Host "=============================="
                         docker --version
 
-                        echo ==============================
-                        echo Docker User
-                        echo ==============================
-                        echo %DOCKER_USER%
+                        Write-Host "=============================="
+                        Write-Host "Token Length"
+                        Write-Host "=============================="
+                        Write-Host $env:DOCKER_PASS.Length
 
-                        echo ==============================
-                        echo Docker Login
-                        echo ==============================
+                        Write-Host "=============================="
+                        Write-Host "Docker Login"
+                        Write-Host "=============================="
 
-                        echo %DOCKER_PASS% | docker login -u "%DOCKER_USER%" --password-stdin
+                        $env:DOCKER_PASS | docker login `
+                            --username $env:DOCKER_USER `
+                            --password-stdin
 
-                        if errorlevel 1 (
-                            echo ==============================
-                            echo Docker login FAILED
-                            echo ==============================
-                            exit /b 1
-                        )
+                        if ($LASTEXITCODE -ne 0) {
+                            Write-Host "Docker login FAILED"
+                            exit 1
+                        }
 
-                        echo ==============================
-                        echo Docker login SUCCESSFUL
-                        echo ==============================
+                        Write-Host "Docker login SUCCESSFUL"
                     '''
                 }
             }
