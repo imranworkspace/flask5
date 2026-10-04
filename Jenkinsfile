@@ -80,7 +80,7 @@ pipeline {
         steps {
             withCredentials([
                 string(
-                    credentialsId: 'dockerhub-token',
+                    credentialsId: 'dockerhub-test2',
                     variable: 'DOCKER_TOKEN'
                 )
             ]) {
