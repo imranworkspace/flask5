@@ -79,36 +79,26 @@ pipeline {
         stage('Docker Login') {
             steps {
                 withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-test',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
+                    string(
+                        credentialsId: 'dockerhub-token',
+                        variable: 'DOCKER_TOKEN'
                     )
                 ]) {
                     powershell '''
                         $env:Path = "$env:DOCKER_PATH;$env:Path"
 
                         Write-Host "=============================="
-                        Write-Host "Docker User"
-                        Write-Host "=============================="
-                        Write-Host $env:DOCKER_USER
-
-                        Write-Host "=============================="
                         Write-Host "Docker Version"
                         Write-Host "=============================="
-                        docker --version
 
-                        Write-Host "=============================="
-                        Write-Host "Token Length"
-                        Write-Host "=============================="
-                        Write-Host $env:DOCKER_PASS.Length
+                        docker --version
 
                         Write-Host "=============================="
                         Write-Host "Docker Login"
                         Write-Host "=============================="
 
-                        $env:DOCKER_PASS | docker login `
-                            --username $env:DOCKER_USER `
+                        $env:DOCKER_TOKEN | docker login `
+                            --username "imrandocker3656" `
                             --password-stdin
 
                         if ($LASTEXITCODE -ne 0) {
@@ -120,6 +110,6 @@ pipeline {
                     '''
                 }
             }
-        }
+    }
     }
 }
