@@ -76,40 +76,42 @@ pipeline {
             }
         }
 
-        stage('Docker Login') {
-            steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'dockerhub-test2',
-                        variable: 'DOCKER_TOKEN'
-                    )
-                ]) {
-                    powershell '''
-                        $env:Path = "$env:DOCKER_PATH;$env:Path"
+        stage('Check Docker Credential') {
+        steps {
+            withCredentials([
+                string(
+                    credentialsId: 'dockerhub-token',
+                    variable: 'DOCKER_TOKEN'
+                )
+            ]) {
+                powershell '''
+                    Write-Host "=============================="
+                    Write-Host "Docker Username"
+                    Write-Host "=============================="
+                    Write-Host "imrandocker3656"
 
-                        Write-Host "=============================="
-                        Write-Host "Docker Version"
-                        Write-Host "=============================="
+                    Write-Host "=============================="
+                    Write-Host "Token Length"
+                    Write-Host "=============================="
+                    Write-Host $env:DOCKER_TOKEN.Length
 
-                        docker --version
+                    Write-Host "=============================="
+                    Write-Host "Token SHA256"
+                    Write-Host "=============================="
 
-                        Write-Host "=============================="
-                        Write-Host "Docker Login"
-                        Write-Host "=============================="
+                    $bytes = [System.Text.Encoding]::UTF8.GetBytes($env:DOCKER_TOKEN)
 
-                        $env:DOCKER_TOKEN | docker login `
-                            --username "imrandocker3656" `
-                            --password-stdin
+                    $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
 
-                        if ($LASTEXITCODE -ne 0) {
-                            Write-Host "Docker login FAILED"
-                            exit 1
-                        }
+                    $hashString = -join ($hash | ForEach-Object {
+                        $_.ToString("x2")
+                    })
 
-                        Write-Host "Docker login SUCCESSFUL"
-                    '''
-                }
+                    Write-Host $hashString
+                '''
             }
+        }
+    }
     }
     }
 }
